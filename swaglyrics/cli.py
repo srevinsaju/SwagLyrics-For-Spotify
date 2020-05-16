@@ -86,6 +86,7 @@ def get_lyrics(song, artist):
     lyrics_path = html.find("div", class_="lyrics")  # finding div on Genius containing the lyrics
     try:
         lyrics = UnicodeDammit(lyrics_path.get_text().strip()).unicode_markup
+        print(html)
     except AttributeError:
         print(page.status_code)
         print(html)
