@@ -43,9 +43,10 @@ def show_tab() -> None:
 
 
 def show_cli(make_issue: bool = False) -> None:
+    sl = SwagLyrics()
     try:
         song, artist = spotify.current()  # get currently playing song, artist
-        print(lyrics(song, artist, make_issue))
+        print(''.join(sl.lyrics(song, artist, make_issue)))
         print('\n(Press Ctrl+C to quit)')
     except SpotifyNotRunning as e:
         print(e)
@@ -61,7 +62,7 @@ def show_cli(make_issue: bool = False) -> None:
                 else:
                     song, artist = spotify.current()
                     clear()
-                    print(lyrics(song, artist, make_issue))
+                    print(''.join(sl.lyrics(song, artist, make_issue)))
                     print('\n(Press Ctrl+C to quit)')
             except (SpotifyNotRunning, SameSongPlaying):
                 time.sleep(5)
