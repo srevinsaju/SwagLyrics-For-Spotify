@@ -6,8 +6,11 @@ from flask import Flask, render_template
 from swaglyrics import SameSongPlaying
 from swaglyrics.cli import lyrics
 
-app = Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates'))
-# use relative path of the template folder
+
+# initialize flask app and set attributes
+app = Flask(__name__)
+app.template_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+app.static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 
 song = None
 artist = None

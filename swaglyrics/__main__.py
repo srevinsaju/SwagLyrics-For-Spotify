@@ -36,8 +36,6 @@ def show_tab() -> None:
     from threading import Timer
     from webbrowser import open
     print('Firing up a browser tab!')
-    app.template_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
-    app.static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
     port = 5042  # random
     url = f"http://127.0.0.1:{port}"
     Timer(1.25, open, args=[url]).start()
