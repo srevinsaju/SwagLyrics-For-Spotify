@@ -28,6 +28,11 @@ def check_new_version():
 
 
 def show_tab() -> None:
+    """
+    Opens a web browser tab with Swaglyrics flask web app
+    :return:
+    :rtype:
+    """
     from threading import Timer
     from webbrowser import open
     print('Firing up a browser tab!')
