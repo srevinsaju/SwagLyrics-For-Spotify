@@ -1,54 +1,30 @@
 import argparse
-import os
 import sys
 import time
 
 import requests
 from SwSpotify import spotify, SpotifyNotRunning
 
-from swaglyrics import unsupported_txt, SameSongPlaying, __version__ as version, backend_url
-from swaglyrics.cli import lyrics, clear
-from swaglyrics.tab import app
+from swaglyrics import SameSongPlaying, __version__ as version, backend_url
+from swaglyrics.cli import clear
+from swaglyrics.swaglyrics import SwagLyrics
+from swaglyrics.tab import app, swaglyrics_web_init
+
+from swaglyrics.config.config import ConfigManager
 
 
-def unsupported_precheck(force: bool = False) -> None:
-    """
-    Checks if new version available and updates unsupported.txt from server.
-    Runs only if 24h have elapsed since previous run or if forced via the -u flag.
-    """
-    if not force:
-        # check 24h has elapsed since last update check
-        with open(unsupported_txt, 'r', encoding='utf-8') as f:
-            try:
-                last_updated = float(f.readline())
-                if time.time() - last_updated < 86400:  # 86400 seconds in a day
-                    return None
-            except ValueError:  # would occur if first line string, on initial versions of unsupported.txt
-                pass
-            except PermissionError as e:
-                print("You should install SwagLyrics as --user or use sudo to access unsupported.txt.", e)
-                sys.exit(1)
+cfgmgr = ConfigManager()
+
+
+def check_new_version():
     try:
         v = requests.get(f'{backend_url}/version')
         ver = v.text
         if ver > version:
             print("New version of SwagLyrics available: v{ver}\nPlease update :)".format(ver=ver))
-            print("To update, execute pip install -U swaglyrics")
+            print("To update, execute \npip install -U swaglyrics\n")
     except requests.exceptions.RequestException:
         pass
-    print('Updating unsupported.txt from server.')
-    with open(unsupported_txt, 'w', encoding='utf-8') as f:
-        try:
-            unsupported_songs = requests.get(f'{backend_url}/master_unsupported')
-            last_updated = time.time()
-            f.write(f'{last_updated}\n')
-            f.write(unsupported_songs.text)
-            print("Updated unsupported.txt successfully.")
-        except requests.exceptions.RequestException as e:
-            print("Could not update unsupported.txt successfully.", e)
-        except PermissionError as e:
-            print("You should install SwagLyrics as --user or use sudo to access unsupported.txt.", e)
-            sys.exit(1)
 
 
 def show_tab() -> None:
@@ -111,12 +87,14 @@ def main() -> None:
     parser.add_argument('-u', '--update-check', action='store_true', help='Force check for updates.')
     args = parser.parse_args()
 
-    if args.tab:
-        unsupported_precheck(args.update_check)
-        show_tab()
+    if args.tab or args.cli:
+        check_new_version()
+        if args.update_check:
+            cfgmgr.update_database()
 
+    if args.tab:
+        show_tab()
     elif args.cli:
-        unsupported_precheck(args.update_check)
         make_issue = args.no_issue
         show_cli(make_issue)
     else:
