@@ -48,7 +48,7 @@ class ConfigManager:
         return self.cfgpath
 
     def read_file(self):
-        with open(os.path.join(self.cfgpath, self.cfgfile), 'r') as f:
+        with open(os.path.join(self.cfgpath, self.cfgfile), 'r', encoding='utf-8') as f:
             try:
                 last_updated = float(f.readline())
                 if not time.time() - last_updated < 86400:  # 86400 seconds in a day
@@ -57,17 +57,17 @@ class ConfigManager:
                 self.update_database()
                 self.update_database()
 
-        with open(os.path.join(self.cfgpath, self.cfgfile), 'r') as f:
+        with open(os.path.join(self.cfgpath, self.cfgfile), 'r', encoding='utf-8') as f:
             config = f.read()
         self.set_config(config)
 
     def append_data(self, data):
-        with open(os.path.join(self.cfgpath, self.cfgfile), 'a') as f:
+        with open(os.path.join(self.cfgpath, self.cfgfile), 'a', encoding='utf-8') as f:
             f.write(data)
 
     def update_database(self):
         print('Updating unsupported.txt from server.')
-        with open(os.path.join(self.cfgpath, self.cfgfile), 'w') as f:
+        with open(os.path.join(self.cfgpath, self.cfgfile), 'w', encoding='utf-8') as f:
             try:
                 unsupported_songs = requests.get(f'{backend_url}/master_unsupported')
                 last_updated = time.time()
