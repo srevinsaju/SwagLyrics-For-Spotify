@@ -43,6 +43,13 @@ def show_tab() -> None:
 
 
 def show_cli(make_issue: bool = False) -> None:
+    """
+    Show lyrics in command line interface
+    :param make_issue: makes issue if true
+    :type make_issue: bool
+    :return: None
+    :rtype: None
+    """
     sl = SwagLyrics()
     try:
         song, artist = spotify.current()  # get currently playing song, artist
