@@ -4,8 +4,23 @@ from SwSpotify import spotify, SpotifyNotRunning
 from flask import Flask, render_template
 
 from swaglyrics import SameSongPlaying
-from swaglyrics.cli import lyrics
+from swaglyrics.swaglyrics import SwagLyrics
 
+
+# Define custom Swaglyrics subtype to defer __init__
+class SwagLyricsWebApp(SwagLyrics):
+    def __init__(self):  # noqa:
+        # the super init is moved to init() method so that
+        # it can be called later
+        # this is to workaround the Flask implementation
+        # as creating flask subclasses are a mess
+        pass
+
+    def init(self):
+        super().__init__()
+
+
+sl = SwagLyricsWebApp()  # initialize an empty subclass of SwagLyrics
 
 # initialize flask app and set attributes
 app = Flask(__name__)
@@ -22,10 +37,10 @@ def tab() -> str:
     global song, artist
     try:
         song, artist = spotify.current()
-        current_lyrics = lyrics(song, artist)
+        current_lyrics = sl.get_lyrics(song, artist)
     except SpotifyNotRunning:
-        current_lyrics = 'Nothing playing at the moment.'
-    current_lyrics = current_lyrics.split('\n')  # break lyrics line by line
+        current_lyrics = ('Nothing playing at the moment.', '')
+
     return render_template('lyrics.html', lyrics=current_lyrics, song=song, artist=artist)
 
 
@@ -42,5 +57,10 @@ def song_changed() -> str:
         return 'no'
 
 
+def swaglyrics_web_init(port=None):
+    sl.init()  # call SwagLyrics.__init__
+    app.run(port=port)
+
+
 if __name__ == '__main__':
-    app.run()
+    swaglyrics_web_init()
