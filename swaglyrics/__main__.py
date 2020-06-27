@@ -39,7 +39,7 @@ def show_tab() -> None:
     port = 5042  # random
     url = f"http://127.0.0.1:{port}"
     Timer(1.25, open, args=[url]).start()
-    app.run(port=port)
+    swaglyrics_web_init(port=port)
 
 
 def show_cli(make_issue: bool = False) -> None:
